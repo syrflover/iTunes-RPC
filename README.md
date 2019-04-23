@@ -1,0 +1,72 @@
+# iTunes Rich Presence
+
+- [Preview](#preview)
+- [Usage](#usage)
+- [Caution](#caution)
+- [Remove All Asset](#remove-all-asset)
+- [Use launchctl](#use-launchctl)
+
+## Preview
+
+![View Small Window](https://imgur.com/0ZCMf2k.png)
+
+![View User Profile](https://imgur.com/35Ro6zw.png)
+
+## Caution
+
+- auto run the iTunes
+
+## Usage
+
+1. create `.env` file
+
+```
+USER_TOKEN=YOUR DISCORD TOKEN HERE
+APP_CLIENT_ID=YOUR DISCORD APPLICATION CLIENT ID HERE
+```
+
+2. `npm install`
+
+3. `npm run build`
+
+4. `npm run start`
+
+## Remove All Asset
+
+just `npm run removeAssets`
+
+## Use launchctl
+
+1. create `itunes-rpc.sh`
+
+```sh
+cd $YOUR_ITUNESRPC_DIRECOTRY
+npm run start
+```
+
+2. input `chmod +x itunes-rpc.sh` in terminal
+
+3. create `local.itunesrpc.plist` in `~/Library/LaunchAgents/`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.itunesrpc</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$YOUR_ITUNESRPC_DIRECOTRY/itunes-rpc.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>
+```
+
+4. input `launchctl load ~/Library/local.itunesrpc.plist` in terminal
+
+if you want unload launchctl, input `launchctl unload ~/Library/local.itunesrpc.plist`

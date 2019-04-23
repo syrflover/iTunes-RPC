@@ -1,0 +1,54 @@
+{
+  "name": "itunes-rpc",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "author": {
+    "name": "syrflover",
+    "email": "syr@meu.works",
+    "url": "https://github.com/syrflover"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syrflover/iTunes-RPC.git"
+  },
+  "bin": "./build/index.js",
+  "scripts": {
+    "start": "node build/index.js",
+    "clean": "rm -rf node_modules yarn.lock package-lock.json",
+    "build": "webpack --config webpack.config.ts",
+    "pkg": "pkg . -t node10-macos-x64 -o ./build/itunes-rpc/itunes-rpc && node script.js",
+    "dev": "NODE_ENV=development ts-node-dev --inspect --respawn src/index.ts",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "removeAssets": "NODE_ENV=development ts-node deleteAllAssets.ts"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.0",
+    "@types/node": "^11.9.4",
+    "@types/uuid": "^3.4.4",
+    "@types/webpack": "^4.4.24",
+    "@types/webpack-node-externals": "^1.6.3",
+    "awesome-typescript-loader": "^5.2.1",
+    "clean-webpack-plugin": "^1.0.1",
+    "pkg": "^4.3.7",
+    "terser-webpack-plugin": "^1.2.2",
+    "ts-node": "^8.0.2",
+    "ts-node-dev": "^1.0.0-pre.32",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-loader": "^3.5.4",
+    "typescript": "^3.4.4",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "discord-rpc": "^3.0.1",
+    "dotenv": "^6.2.0",
+    "moment": "^2.24.0",
+    "nodekell": "syrflover/nodekell",
+    "url-slug": "^2.0.0",
+    "uuid": "^3.3.2"
+  }
+}
