@@ -37,16 +37,18 @@ just `npm run removeAssets`
 
 ## Use launchctl
 
-1. create `itunes-rpc.sh`
+1. `npm run pkg`
+
+2. `vim itunes-rpc.sh`
 
 ```sh
 cd $YOUR_ITUNESRPC_DIRECOTRY
-npm run start
+./build/itunes-rpc/itunes-rpc
 ```
 
-2. input `chmod +x itunes-rpc.sh` in terminal
+3. `chmod +x itunes-rpc.sh`
 
-3. create `local.itunesrpc.plist` in `~/Library/LaunchAgents/`
+4. `vim ~/Library/LaunchAgents/local.itunesrpc.plist`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -67,6 +69,6 @@ npm run start
 </plist>
 ```
 
-4. input `launchctl load ~/Library/local.itunesrpc.plist` in terminal
+5. `launchctl load ~/Library/local.itunesrpc.plist`
 
 if you want unload launchctl, input `launchctl unload ~/Library/local.itunesrpc.plist`
