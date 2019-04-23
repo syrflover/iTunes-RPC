@@ -8,7 +8,7 @@ const resolvePath = (s) => {
   return path.resolve(a, s);
 };
 
-const configSampleFile = resolvePath('build/itunes-rpc/env');
+const configSampleFile = resolvePath('build/itunes-rpc/.env');
 
 const config = fs.readFileSync(resolvePath('.env.sample'), {
   encoding: 'utf8',
