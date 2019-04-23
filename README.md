@@ -1,4 +1,4 @@
-# iTunes Rich Presence
+# Discord Rich Presence for iTunes on macos
 
 - [Preview](#preview)
 - [Usage](#usage)
