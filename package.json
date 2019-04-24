@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.0",
+    "@types/luxon": "^1.12.0",
     "@types/node": "^11.9.4",
     "@types/uuid": "^3.4.4",
     "@types/webpack": "^4.4.24",
@@ -46,7 +47,7 @@
     "axios": "^0.18.0",
     "discord-rpc": "^3.0.1",
     "dotenv": "^6.2.0",
-    "moment": "^2.24.0",
+    "luxon": "^1.12.1",
     "nodekell": "syrflover/nodekell",
     "url-slug": "^2.0.0",
     "uuid": "^3.3.2"

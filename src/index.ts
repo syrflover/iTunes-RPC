@@ -2,9 +2,9 @@ import './types/Array';
 
 import * as fs from 'fs';
 import * as RPC from 'discord-rpc';
-import * as moment from 'moment';
 import * as uuid from 'uuid/v5';
 import * as F from 'nodekell';
+import { DateTime } from 'luxon';
 import urlSlug = require('url-slug');
 
 import {
@@ -20,7 +20,7 @@ import {
 } from './lib/discord';
 import imageToBase64 from './lib/imageToBase64';
 import * as db from './db';
-import env, { IEnv } from './env';
+import env from './env';
 import { find, uniq } from './lib/utils';
 import { pathExists, readFile } from './lib/fs';
 import { checkEnv, checkRPC } from './checker';
@@ -124,7 +124,7 @@ const setRPC = async () => {
         .rename(imagePath, `${env.ASSET_FOLDER}/${id}.jpg`)
         .then(() => console.info(`Rename <- ${songKey}.jpg to ${id}.jpg`));
     } else if (alreadyCoverInLocal) {
-      console.info('Arleady Album Art in Local');
+      console.info('Already Album Art in Local');
       fs.promises
         .unlink(imagePath)
         .then(() => console.info(`Remove <- ${songKey}.jpg`));
@@ -161,17 +161,19 @@ const setRPC = async () => {
 
     assetKey = id;
   } else {
-    const startTimestamp = moment().unix();
-    const endTimestamp = moment()
-      .add(Math.round(duration - position), 'seconds')
-      .unix();
+    const startTimestamp = DateTime.local().toSeconds();
+    const endTimestamp = DateTime.fromSeconds(startTimestamp)
+      .plus({
+        seconds: duration - position,
+      })
+      .toSeconds();
 
     rpc!
       .setActivity({
-        details: `${title}`,
+        details: title,
         state: artist,
-        startTimestamp,
-        endTimestamp,
+        startTimestamp: Math.round(startTimestamp),
+        endTimestamp: Math.round(endTimestamp),
         largeImageKey: assetKey,
         largeImageText: album,
         // smallImageKey: state,
