@@ -18,7 +18,7 @@
 
 ## Require
 
-- NodeJS >= 10.15.3 (Recommend 10.15.3)
+- NodeJS >= 10.15.3 (Not Recommend 12)
 
 ## Usage
 
