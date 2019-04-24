@@ -32,17 +32,10 @@ export const write = async (a: IData) => {
 };
 
 export const initialize = async () => {
-  try {
-    if (!(await pathExists(env.ASSET_FOLDER))) {
-      await fs.promises.mkdir(env.ASSET_FOLDER);
-    }
-    if (!(await pathExists(dbPath))) {
-      await write({ history: [] });
-    }
-  } catch (e) {
-    if (e.code !== 'EEXIST') {
-      console.error(e);
-      process.exit(1);
-    }
+  if (!(await pathExists(env.ASSET_FOLDER))) {
+    await fs.promises.mkdir(env.ASSET_FOLDER);
+  }
+  if (!(await pathExists(dbPath))) {
+    await write({ history: [] });
   }
 };

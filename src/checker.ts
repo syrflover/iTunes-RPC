@@ -18,7 +18,7 @@ export const checkRPC = (r: RPC.Client | null) => {
   }
 
   if (!r.transport.socket) {
-    // discord is not openned
+    // discord is not opened
     return false;
   }
 

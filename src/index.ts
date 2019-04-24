@@ -34,9 +34,9 @@ const UUID_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
 const prev: [Artist, Album, Title] = ['', '', ''];
 let assetKey = 'init';
 
-const setRPC = async () => {
+const setRPC = async (drpc: RPC.Client | null) => {
   // stopped !== paused
-  if (!checkRPC(rpc) || (await isStopped())) {
+  if (!checkRPC(drpc) || (await isStopped())) {
     return;
   }
 
@@ -65,11 +65,8 @@ const setRPC = async () => {
     } = await saveArtWorkOfCurrentTrack(songKey);
     console.info(`Save Album Art <- ${songKey}`);
 
-    console.info(
-      `${
-        hasCoverInITunes ? 'Has' : `Has'nt`
-      } Album Art in iTunes <- ${songKey}`,
-    );
+    // prettier-ignore
+    console.info(`${hasCoverInITunes ? 'Has' : `Has'nt`} Album Art in iTunes <- ${songKey}`);
 
     if (!hasCoverInITunes) {
       assetKey = 'has_not_album_art';
@@ -112,11 +109,11 @@ const setRPC = async () => {
       }
     }
 
-    // rename or remove image file
-
     const alreadyCoverInLocal = await pathExists(
       `${env.ASSET_FOLDER}/${id}.jpg`,
     );
+
+    // rename or remove image file
 
     if (!alreadyCoverInLocal && hasCoverInITunes) {
       console.info(`Not Ready Album Art in Local`);
@@ -130,24 +127,20 @@ const setRPC = async () => {
         .then(() => console.info(`Remove <- ${songKey}.jpg`));
     }
 
-    // upload and db write
+    // upload asset
 
     const songInAsset = await F.run(assets, find((e) => e.name === id));
 
     if (!songInAsset) {
-      try {
-        await uploadRichPresenceAsset({
-          name: id,
-          image: cover,
-          type: 1,
-        });
-        console.info(`Upload Rich Presence Asset <- ${id}`);
-      } catch (e) {
-        console.error(e);
-      }
+      await uploadRichPresenceAsset({
+        name: id,
+        image: cover,
+        type: 1,
+      });
+      console.info(`Upload Rich Presence Asset <- ${id}`);
     }
 
-    // update song and history
+    // update history
 
     const updatedHistory = await uniq((e) => e.assetID, [
       { assetID: id, date: Date.now() },
@@ -168,7 +161,7 @@ const setRPC = async () => {
       })
       .toSeconds();
 
-    rpc!
+    drpc!
       .setActivity({
         details: title,
         state: artist,
@@ -204,18 +197,18 @@ rpc
     }
   });
 
-rpc.on('ready', async () => {
-  console.log('ready', 'pid =', process.pid);
+rpc.once('ready', async () => {
+  console.log('\nready', 'pid =', process.pid);
 });
 
-setInterval(async () => {
+setInterval(() => {
   if (checkRPC(rpc)) {
     return;
   }
   rpc = new RPC.Client({ transport: 'ipc' });
 
-  rpc.on('ready', async () => {
-    console.log('ready', 'pid =', process.pid);
+  rpc.once('ready', async () => {
+    console.log('\nready', 'pid =', process.pid);
   });
 
   rpc
@@ -231,11 +224,18 @@ setInterval(async () => {
   return;
 }, 12e3);
 
-db.initialize().then(async () => {
-  if (!(await checkEnv(env))) {
-    console.error('Please Set Client ID and User Token');
-    process.exit(1);
-  }
+db.initialize()
+  .then(async () => {
+    if (!(await checkEnv(env))) {
+      console.error('Please Set Client ID and User Token');
+      process.exit(1);
+    }
 
-  const timer = F.interval(1000, setRPC);
-});
+    F.interval(1000, () => {
+      setRPC(rpc);
+    });
+  })
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
