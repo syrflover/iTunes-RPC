@@ -8,13 +8,17 @@
 
 ## Preview
 
-![View Small Window](https://imgur.com/0ZCMf2k.png)
+![View Small Profile](https://imgur.com/0ZCMf2k.png)
 
-![View User Profile](https://imgur.com/35Ro6zw.png)
+![View Big Profile](https://imgur.com/35Ro6zw.png)
 
 ## Caution
 
 - auto run the iTunes
+
+## Require
+
+- NodeJS >= 10.15.3 (Recommend 10.15.3)
 
 ## Usage
 
