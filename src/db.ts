@@ -2,7 +2,7 @@ import * as fs from 'fs';
 
 import env from './env';
 import { parseJSON, stringifyJSON } from './lib/json';
-import { pathExists } from './lib/utils';
+import { pathExists, writeFile, readFile } from './lib/fs';
 
 export interface IHistory {
   assetID: string;
@@ -15,43 +15,21 @@ export interface IData {
 
 const dbPath = `${env.ASSET_FOLDER}/db.json`;
 
-export const read = (): Promise<IData> =>
-  new Promise((resolve, reject) => {
-    let db = '';
+export const read = async () => {
+  const db = (await readFile(dbPath, 'utf8')) as string;
 
-    const dbRS = fs.createReadStream(dbPath, { encoding: 'utf8' });
+  const res = await parseJSON<IData>(db);
 
-    dbRS.on('data', (data) => {
-      db += data;
-    });
+  return res;
+};
 
-    dbRS.on('error', (error) => {
-      reject(error);
-    });
+export const write = async (a: IData) => {
+  const stringified = await stringifyJSON(a);
 
-    dbRS.on('end', async () => {
-      const parsed = await parseJSON<IData>(db);
+  const res = await writeFile(dbPath, stringified, 'utf8');
 
-      resolve(parsed);
-
-      dbRS.destroy();
-    });
-  });
-
-export const write = async (a: IData): Promise<boolean> =>
-  new Promise(async (resolve, reject) => {
-    const stringfied = await stringifyJSON(a);
-
-    const dbWS = fs.createWriteStream(dbPath, { encoding: 'utf8' });
-
-    dbWS.on('error', (error) => {
-      reject(error);
-    });
-
-    const res = dbWS.write(stringfied);
-
-    resolve(res);
-  });
+  return res;
+};
 
 export const initialize = async () => {
   try {

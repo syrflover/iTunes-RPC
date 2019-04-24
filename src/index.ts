@@ -21,7 +21,9 @@ import {
 import imageToBase64 from './lib/imageToBase64';
 import * as db from './db';
 import env, { IEnv } from './env';
-import { find, uniq, pathExists } from './lib/utils';
+import { find, uniq } from './lib/utils';
+import { pathExists, readFile } from './lib/fs';
+import { checkEnv, checkRPC } from './checker';
 
 type Artist = string;
 type Album = string;
@@ -74,7 +76,8 @@ const setRPC = async () => {
       return;
     }
 
-    const cover = imageToBase64(await fs.promises.readFile(imagePath));
+    const cover = imageToBase64(await readFile(imagePath, 'base64'));
+    console.info(`Album Art Encode to base64 <- ${songKey}`);
 
     const id = uuid(cover, UUID_NAMESPACE).replace(/\-/g, '');
 
@@ -87,7 +90,7 @@ const setRPC = async () => {
         const removed = await F.run(
           historyDB,
           F.filter((e) => e.date !== removeTarget.date),
-          (e) => F.collect(e),
+          F.collect,
         );
 
         await db.write({
@@ -101,7 +104,7 @@ const setRPC = async () => {
         const updateAssets = await F.run(
           assets,
           F.filter((e) => e.name !== removeTarget.assetID),
-          (e) => F.collect(e),
+          F.collect,
         );
 
         assets.clear().push(...updateAssets);
@@ -144,8 +147,8 @@ const setRPC = async () => {
     // update song and history
 
     const updatedHistory = await uniq((e) => e.assetID, [
-      ...historyDB,
       { assetID: id, date: Date.now() },
+      ...historyDB,
     ]);
 
     await db.write({
@@ -154,8 +157,6 @@ const setRPC = async () => {
     console.info(`Update Song and History <- ${id}`);
 
     assetKey = id;
-
-    // assetKey.clear().push(id);
   } else {
     const startTimestamp = moment().unix();
     const endTimestamp = moment()
@@ -177,32 +178,6 @@ const setRPC = async () => {
       .catch(console.error);
   }
   return;
-};
-
-const checkEnv = async (ienv: IEnv) => {
-  const a = await F.run(
-    [ienv.APP_CLIENT_ID, ienv.USER_TOKEN],
-    F.every((e) => e.trim().length > 0),
-  );
-
-  return a;
-};
-
-const checkRPC = (r: RPC.Client | null) => {
-  if (!r) {
-    return false;
-  }
-
-  if (!r.transport.socket) {
-    // discord is not openned
-    return false;
-  }
-
-  if (r.transport.socket) {
-    return !r.transport.socket.destroyed;
-  }
-
-  return true;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,7 +210,7 @@ setInterval(async () => {
   rpc = new RPC.Client({ transport: 'ipc' });
 
   rpc.on('ready', async () => {
-    console.log('ready', 'pid = ', process.pid);
+    console.log('ready', 'pid =', process.pid);
   });
 
   rpc

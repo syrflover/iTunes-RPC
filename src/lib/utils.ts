@@ -1,12 +1,4 @@
 import * as F from 'nodekell';
-import { exists } from 'fs';
-
-export const pathExists = (p: string): Promise<boolean> =>
-  new Promise((resolve, reject) => {
-    exists(p, (ex) => {
-      resolve(ex);
-    });
-  });
 
 type Iter<T> = Iterable<T> | AsyncIterable<T>;
 

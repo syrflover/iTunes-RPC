@@ -1,6 +1,6 @@
 import { spawn, exec } from 'child_process';
 import env from '../env';
-import { pathExists } from './utils';
+import { pathExists } from './fs';
 
 interface IPlayTime {
   position: number;
@@ -9,7 +9,7 @@ interface IPlayTime {
   finish: number;
 }
 
-type PlayStateType = 'playing' | 'paused' | 'stopped';
+// type PlayStateType = 'playing' | 'paused' | 'stopped';
 
 export interface IPlayInfo {
   time: IPlayTime;
@@ -88,14 +88,6 @@ export const saveArtWorkOfCurrentTrack = (
   fileName: string,
 ): Promise<{ exists: boolean; path: string }> => {
   return new Promise(async (resolve, reject) => {
-    /* exec(`osascript ${process.cwd()}/getArtWorkOfCurrentTrack.scpt`)
-      .then(() => {
-        resolve(`${process.env.HOME}/richpresence/cover.jpg`);
-      })
-      .catch((error) => {
-        reject(error);
-      }); */
-
     const filePath = `${env.ASSET_FOLDER}/${fileName}.jpg`;
 
     /*     const script = `try
