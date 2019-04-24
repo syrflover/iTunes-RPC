@@ -1,9 +1,8 @@
 import * as fs from 'fs';
-import { exists } from 'fs';
 
 export const pathExists = (p: string): Promise<boolean> =>
   new Promise((resolve, reject) => {
-    exists(p, (ex) => {
+    fs.exists(p, (ex) => {
       resolve(ex);
     });
   });
