@@ -1,9 +1,9 @@
 # Discord Rich Presence for iTunes on macos
 
 - [Preview](#preview)
-- [Usage](#usage)
 - [Caution](#caution)
 - [Require](#require)
+- [Usage](#usage)
 - [Remove All Asset](#remove-all-asset)
 - [Use launchctl](#use-launchctl)
 
