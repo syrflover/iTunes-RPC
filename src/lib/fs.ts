@@ -19,12 +19,10 @@ export const readFile = (p: string, encoding: string): Promise<string> =>
 
     rs.once('error', (error) => {
       reject(error);
-      rs.destroy();
     });
 
     rs.once('end', async () => {
       resolve(res);
-      rs.destroy();
     });
   });
 
@@ -38,14 +36,9 @@ export const writeFile = (
 
     ws.once('error', (error) => {
       reject(error);
-      ws.destroy();
     });
 
     const res = ws.write(data);
 
     resolve(res);
-
-    setImmediate(() => {
-      ws.destroy();
-    });
   });
