@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const moment = require('moment');
+const { DateTime } = require('luxon');
 
 const resolvePath = (s) => {
   const a = fs.realpathSync(process.cwd());
@@ -20,8 +20,8 @@ fs.writeFile(configSampleFile, config, (error) => {
   }
 
   exec(
-    `tar -cvf ./build/itunes-rpc-${moment().format(
-      'YYMMDDHH',
+    `tar -cvf ./build/itunes-rpc-${DateTime.local().toFormat(
+      'yyyyMMddhhmmss',
     )}.tar ./build/itunes-rpc`,
     (error) => {
       if (error) {
