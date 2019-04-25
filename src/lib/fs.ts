@@ -1,11 +1,10 @@
 import * as fs from 'fs';
 
 export const pathExists = (p: string): Promise<boolean> =>
-  new Promise((resolve, reject) => {
-    fs.exists(p, (ex) => {
-      resolve(ex);
-    });
-  });
+  fs.promises
+    .access(p)
+    .then(() => true)
+    .catch(() => false);
 
 export const readFile = (p: string, encoding: string): Promise<string> =>
   new Promise((resolve, reject) => {
