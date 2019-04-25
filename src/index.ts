@@ -21,7 +21,7 @@ import {
 import imageToBase64 from './lib/imageToBase64';
 import * as db from './db';
 import env from './env';
-import { find, uniq } from './lib/utils';
+import { uniq } from './lib/utils';
 import { pathExists, readFile } from './lib/fs';
 import { checkEnv, checkRPC } from './checker';
 
@@ -129,7 +129,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
 
     // upload asset
 
-    const songInAsset = await F.run(assets, find((e) => e.name === id));
+    const songInAsset = await F.some((e) => e.name === id, assets);
 
     if (!songInAsset) {
       await uploadRichPresenceAsset({
