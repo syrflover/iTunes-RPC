@@ -153,28 +153,27 @@ const setRPC = async (drpc: RPC.Client | null) => {
     console.info(`Update Song and History <- ${id}`);
 
     assetKey = id;
-  } else {
-    const startTimestamp = DateTime.local().toSeconds();
-    const endTimestamp = DateTime.fromSeconds(startTimestamp)
-      .plus({
-        seconds: duration - position,
-      })
-      .toSeconds();
-
-    drpc!
-      .setActivity({
-        details: title,
-        state: artist,
-        startTimestamp: Math.round(startTimestamp),
-        endTimestamp: Math.round(endTimestamp),
-        largeImageKey: assetKey,
-        largeImageText: album,
-        // smallImageKey: state,
-        // smallImageText: state,
-        instance: true,
-      })
-      .catch(console.error);
   }
+  const startTimestamp = DateTime.local().toSeconds();
+  const endTimestamp = DateTime.fromSeconds(startTimestamp)
+    .plus({
+      seconds: duration - position,
+    })
+    .toSeconds();
+
+  drpc!
+    .setActivity({
+      details: title,
+      state: artist,
+      startTimestamp: Math.round(startTimestamp),
+      endTimestamp: Math.round(endTimestamp),
+      largeImageKey: assetKey,
+      largeImageText: album,
+      // smallImageKey: state,
+      // smallImageText: state,
+      instance: true,
+    })
+    .catch(console.error);
   return;
 };
 
