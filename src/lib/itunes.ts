@@ -32,7 +32,6 @@ const spawnp = (c: string, a: string[]): Promise<string> =>
 
     cmd.stdout.on('error', (e) => {
       cmd.kill();
-      console.log(1);
       reject(e);
     });
 
