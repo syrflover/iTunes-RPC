@@ -18,9 +18,10 @@ import {
 	uploadRichPresenceAsset,
 	deleteRichPresenceAsset,
 	checkAssetsLimit,
+	IRichPresenceAsset,
 } from './lib/discord';
 import imageToBase64 from './lib/imageToBase64';
-import { store } from './store';
+import { store, IHistory } from './store';
 import env from './env';
 import { uniq, random } from './lib/utils';
 import { checkEnv, checkRPC } from './checker';
@@ -82,27 +83,23 @@ const setRPC = async (drpc: RPC.Client | null) => {
 		console.info('Read History Data');
 
 		if (checkAssetsLimit(assets, 150)) {
-			const removeTarget = historyDB.length
-				? await F.run(historyDB, F.minBy((e) => e.date))
+			const hasHistory = historyDB.length > 0;
+
+			const oldest =
+				hasHistory && (await F.run(historyDB, F.minBy((e) => e.date)));
+
+			const removeTarget = hasHistory
+				? await F.run(
+						assets,
+						F.filter((e) => e.name === (oldest as IHistory).assetID),
+						F.head,
+					)
 				: random(assets);
 
-			if ('name' in removeTarget) {
-				await deleteRichPresenceAsset(assets, [removeTarget.name]);
-				console.info(
-					`Delete Rich Presence Asset <- ${removeTarget.name}`,
-				);
-
-				const updateAssets = await F.run(
-					assets,
-					F.filter((e) => e.name !== removeTarget.name),
-					F.collect,
-				);
-
-				assets.clear().push(...updateAssets);
-			} else if (removeTarget.assetID !== id) {
+			if (removeTarget.name !== id) {
 				const removed = await F.run(
 					historyDB,
-					F.filter((e) => e.date !== removeTarget.date),
+					F.filter((e) => e.assetID !== removeTarget.name),
 					F.collect,
 				);
 
@@ -111,14 +108,14 @@ const setRPC = async (drpc: RPC.Client | null) => {
 				});
 				console.info(`Remove History <- ${id}`);
 
-				await deleteRichPresenceAsset(assets, [removeTarget.assetID]);
+				await deleteRichPresenceAsset(assets, [removeTarget.name]);
 				console.info(
-					`Delete Rich Presence Asset <- ${removeTarget.assetID}`,
+					`Delete Rich Presence Asset <- ${removeTarget.name}`,
 				);
 
 				const updateAssets = await F.run(
 					assets,
-					F.filter((e) => e.name !== removeTarget.assetID),
+					F.filter((e) => e.name !== removeTarget.name),
 					F.collect,
 				);
 
