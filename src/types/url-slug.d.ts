@@ -1,5 +1,5 @@
 declare module 'url-slug' {
-  function urlSlug(s: string): string;
+	function urlSlug(s: string): string;
 
-  export = urlSlug;
+	export = urlSlug;
 }

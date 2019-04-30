@@ -1,21 +1,19 @@
-import * as fs from 'fs';
+import { createStore } from 'simply-store';
 
 import env from './env';
-import { parseJSON, stringifyJSON } from './lib/json';
-import { pathExists, writeFile, readFile } from './lib/fs';
 
 export interface IHistory {
-  assetID: string;
-  date: number;
+	assetID: string;
+	date: number;
 }
 
 export interface IData {
-  history: IHistory[];
+	history: IHistory[];
 }
 
 const dbPath = `${env.ASSET_FOLDER}/db.json`;
 
-export const read = async () => {
+/* export const read = async () => {
   const db = (await readFile(dbPath, 'utf8')) as string;
 
   const res = await parseJSON<IData>(db);
@@ -38,4 +36,6 @@ export const initialize = async () => {
   if (!(await pathExists(dbPath))) {
     await write({ history: [] });
   }
-};
+}; */
+
+export const store = createStore<IData>(dbPath);

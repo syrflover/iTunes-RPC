@@ -13,7 +13,9 @@
     "unified-signatures": false,
     "interface-name": false,
     "max-classes-per-file": false,
-    "variable-name": false
+    "variable-name": false,
+    "indent": [true, "tabs", 4],
+    "ter-indent": false
   },
   "rulesDirectory": []
 }
