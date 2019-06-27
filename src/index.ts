@@ -83,18 +83,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
 		console.info('Read History Data');
 
 		if (checkAssetsLimit(assets, 150)) {
-			const hasHistory = historyDB.length > 0;
-
-			const oldest =
-				hasHistory && (await F.run(historyDB, F.minBy((e) => e.date)));
-
-			const removeTarget = hasHistory
-				? await F.run(
-						assets,
-						F.filter((e) => e.name === (oldest as IHistory).assetID),
-						F.head,
-					)
-				: random(assets);
+			const removeTarget = random(assets);
 
 			if (removeTarget.name !== id) {
 				const removed = await F.run(
