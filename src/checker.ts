@@ -2,7 +2,6 @@ import * as F from 'nodekell';
 import * as RPC from 'discord-rpc';
 
 import { IEnv } from './env';
-import { pathExists } from 'simply-store';
 
 export const checkEnv = async (ienv: IEnv) => {
 	const a = await F.run(

@@ -18,10 +18,9 @@ import {
 	uploadRichPresenceAsset,
 	deleteRichPresenceAsset,
 	checkAssetsLimit,
-	IRichPresenceAsset,
 } from './lib/discord';
 import imageToBase64 from './lib/imageToBase64';
-import { store, IHistory } from './store';
+import { store } from './store';
 import env from './env';
 import { uniq, random } from './lib/utils';
 import { checkEnv, checkRPC } from './checker';
