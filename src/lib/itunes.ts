@@ -1,4 +1,4 @@
-import { pathExists } from 'simply-store';
+import { pathExists } from '@syrflover/simple-store';
 import env from '../env';
 import { spawnp } from './spawnp';
 

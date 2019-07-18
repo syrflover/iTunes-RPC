@@ -5,7 +5,7 @@ import * as RPC from 'discord-rpc';
 import * as uuid from 'uuid/v5';
 import * as F from 'nodekell';
 import { DateTime } from 'luxon';
-import { pathExists, readFile } from 'simply-store';
+import { pathExists, readFile } from '@syrflover/simple-store';
 import urlSlug = require('url-slug');
 
 import {

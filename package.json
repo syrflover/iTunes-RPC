@@ -44,12 +44,12 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
+    "@syrflover/simple-store": "^0.0.10",
     "axios": "^0.18.0",
     "discord-rpc": "^3.0.1",
     "dotenv": "^6.2.0",
     "luxon": "^1.12.1",
     "nodekell": "^1.3.10",
-    "simply-store": "syrflover/simply-store",
     "url-slug": "^2.0.0",
     "uuid": "^3.3.2"
   }
