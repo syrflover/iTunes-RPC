@@ -66,7 +66,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
 		console.info(`Save Album Art <- ${songKey}`);
 
 		// prettier-ignore
-		console.info(`${hasCoverInITunes ? 'Has' : `Has'nt`} Album Art in iTunes <- ${songKey}`);
+		console.info(`${hasCoverInITunes ? 'Has' : `Hasn't`} Album Art in iTunes <- ${songKey}`);
 
 		if (!hasCoverInITunes) {
 			assetKey = 'has_not_album_art';
