@@ -7,6 +7,7 @@ import * as F from 'nodekell';
 import { DateTime } from 'luxon';
 import { pathExists, readFile } from '@syrflover/simple-store';
 import urlSlug = require('url-slug');
+import { logger } from './logger';
 
 import {
 	getCurrentPlayingInfo,
@@ -50,23 +51,23 @@ const setRPC = async (drpc: RPC.Client | null) => {
 	const isChange = await F.some((e) => !current.includes(e), prev);
 
 	if (isChange) {
-		console.log('\n\n');
+		logger.log('\n\n');
 
 		prev.clear().push(artist, album, title);
 
 		const songKey = urlSlug(`${artist} ${album} ${title}`);
 
 		const assets = await getRichPresenceAssets();
-		console.info('Get Rich Presence Assets');
+		logger.info('Get Rich Presence Assets');
 
 		const {
 			exists: hasCoverInITunes,
 			path: imagePath,
 		} = await saveArtWorkOfCurrentTrack(songKey);
-		console.info(`Save Album Art <- ${songKey}`);
+		logger.info(`Save Album Art <- ${songKey}`);
 
 		// prettier-ignore
-		console.info(`${hasCoverInITunes ? 'Has' : `Hasn't`} Album Art in iTunes <- ${songKey}`);
+		logger.info(`${hasCoverInITunes ? 'Has' : `Hasn't`} Album Art in iTunes <- ${songKey}`);
 
 		if (!hasCoverInITunes) {
 			assetKey = 'has_not_album_art';
@@ -74,12 +75,12 @@ const setRPC = async (drpc: RPC.Client | null) => {
 		}
 
 		const cover = imageToBase64(await readFile(imagePath, 'base64'));
-		console.info(`Album Art Encode to base64 <- ${songKey}`);
+		logger.info(`Album Art Encode to base64 <- ${songKey}`);
 
 		const id = uuid(cover, UUID_NAMESPACE).replace(/\-/g, '');
 
 		const { history: historyDB } = await store.read();
-		console.info('Read History Data');
+		logger.info('Read History Data');
 
 		if (checkAssetsLimit(assets, 150)) {
 			const removeTarget = random(assets);
@@ -94,10 +95,10 @@ const setRPC = async (drpc: RPC.Client | null) => {
 				await store.write({
 					history: removed,
 				});
-				console.info(`Remove History <- ${id}`);
+				logger.info(`Remove History <- ${id}`);
 
 				await deleteRichPresenceAsset(assets, [removeTarget.name]);
-				console.info(
+				logger.info(
 					`Delete Rich Presence Asset <- ${removeTarget.name}`,
 				);
 
@@ -118,17 +119,17 @@ const setRPC = async (drpc: RPC.Client | null) => {
 		// rename or remove image file
 
 		if (!alreadyCoverInLocal && hasCoverInITunes) {
-			console.info(`Not Ready Album Art in Local`);
+			logger.info(`Not Ready Album Art in Local`);
 			fs.promises
 				.rename(imagePath, `${env.ASSET_FOLDER}/${id}.jpg`)
 				.then(() =>
-					console.info(`Rename <- ${songKey}.jpg to ${id}.jpg`),
+					logger.info(`Rename <- ${songKey}.jpg to ${id}.jpg`),
 				);
 		} else if (alreadyCoverInLocal) {
-			console.info('Already Album Art in Local');
+			logger.info('Already Album Art in Local');
 			fs.promises
 				.unlink(imagePath)
-				.then(() => console.info(`Remove <- ${songKey}.jpg`));
+				.then(() => logger.info(`Remove <- ${songKey}.jpg`));
 		}
 
 		// upload asset
@@ -141,7 +142,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
 				image: cover,
 				type: 1,
 			});
-			console.info(`Upload Rich Presence Asset <- ${id}`);
+			logger.info(`Upload Rich Presence Asset <- ${id}`);
 		}
 
 		// update history
@@ -154,7 +155,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
 		await store.write({
 			history: updatedHistory,
 		});
-		console.info(`Update Song and History <- ${id}`);
+		logger.info(`Update Song and History <- ${id}`);
 
 		assetKey = id;
 	} else {
@@ -177,7 +178,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
 				// smallImageText: state,
 				instance: true,
 			})
-			.catch(console.error);
+			.catch(logger.error);
 	}
 	return;
 };
@@ -195,12 +196,12 @@ rpc.login({
 	clientId: env.APP_CLIENT_ID,
 }).catch((error) => {
 	if (error.message !== 'Could not connect') {
-		console.error(error);
+		logger.error(error);
 	}
 });
 
 rpc.once('ready', async () => {
-	console.log('\nready', 'pid =', process.pid);
+	logger.log('\nready', 'pid =', process.pid);
 });
 
 setInterval(() => {
@@ -210,14 +211,14 @@ setInterval(() => {
 	rpc = new RPC.Client({ transport: 'ipc' });
 
 	rpc.once('ready', async () => {
-		console.log('\nready', 'pid =', process.pid);
+		logger.log('\nready', 'pid =', process.pid);
 	});
 
 	rpc.login({
 		clientId: env.APP_CLIENT_ID,
 	}).catch((error) => {
 		if (error.message !== 'Could not connect') {
-			console.error(error);
+			logger.error(error);
 		}
 		rpc = null;
 	});
@@ -228,7 +229,7 @@ store
 	.initialize({ history: [] })
 	.then(async () => {
 		if (!(await checkEnv(env))) {
-			console.error('Please Set Client ID and User Token');
+			logger.error('Please Set Client ID and User Token');
 			process.exit(1);
 		}
 
@@ -237,6 +238,6 @@ store
 		});
 	})
 	.catch((e) => {
-		console.error(e);
+		logger.error(e);
 		process.exit(1);
 	});

@@ -33,7 +33,7 @@ export interface IPlayInfo {
 }; */
 
 const iTunes =
-	parseInt(os.release().split('.')[0], 10) === 19 ? 'Music' : 'iTunes';
+	parseInt(os.release().split('.')[0], 10) >= 19 ? 'Music' : 'iTunes';
 
 export const isStopped = (): Promise<boolean> => {
 	return new Promise(async (resolve, reject) => {
