@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { pathExists } from '@syrflover/simple-store';
 import env from '../env';
 import { spawnp } from './spawnp';
@@ -31,11 +32,14 @@ export interface IPlayInfo {
   });
 }; */
 
+const iTunes =
+	parseInt(os.release().split('.')[0], 10) === 19 ? 'Music' : 'iTunes';
+
 export const isStopped = (): Promise<boolean> => {
 	return new Promise(async (resolve, reject) => {
 		await spawnp('osascript', [
 			'-e',
-			'tell application "iTunes" to {player state}',
+			`tell application "${iTunes}" to {player state}`,
 		])
 			.then((stdout) => {
 				resolve(stdout.trim() === 'stopped');
@@ -96,7 +100,7 @@ end try`; */
 			'-e',
 			'end tell',
 			'-e',
-			'tell application "iTunes" to tell artwork 1 of current track',
+			`tell application "${iTunes}" to tell artwork 1 of current track`,
 			'-e',
 			'set srcBytes to raw data',
 			'-e',
@@ -144,8 +148,7 @@ export const getCurrentPlayingInfo = (): Promise<IPlayInfo> => {
 	return new Promise(async (resolve, reject) => {
 		// osascript -e 'tell application "iTunes" to {position: player position} & {start: start, duration: duration, finish: finish, name: name, artist: artist, album: album} of current track & {state: player state}'
 
-		const script =
-			'tell application "iTunes" to {position: player position} & {start: start, duration: duration, finish: finish, name: name, artist: artist, album: album} of current track'; // & {state: player state}
+		const script = `tell application "${iTunes}" to {position: player position} & {start: start, duration: duration, finish: finish, name: name, artist: artist, album: album} of current track`; // & {state: player state}
 
 		await spawnp('osascript', ['-e', script])
 			.then((stdout) => {
