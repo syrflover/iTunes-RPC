@@ -43,6 +43,8 @@ const setRPC = async (drpc: RPC.Client | null) => {
 
     const playInfo = await getCurrentPlayingInfo();
 
+    logger.debug('playInfo =', playInfo);
+
     const { title, album, artist, time } = playInfo;
 
     const { duration, position } = time;
@@ -51,7 +53,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
     const isChange = await F.some((e) => !current.includes(e), prev);
 
     if (isChange) {
-        // logger.log('\n\n');
+        logger.log('');
 
         prev.clear().push(artist, album, title);
 
@@ -178,7 +180,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
                 // smallImageText: state,
                 instance: true,
             })
-            .catch(logger.error);
+            .catch((e) => logger.error(e));
     }
     return;
 };
@@ -234,7 +236,7 @@ store
         }
 
         F.interval(1000, () => {
-            setRPC(rpc).catch(logger.error);
+            setRPC(rpc).catch((e) => logger.error(e));
         });
     })
     .catch((e) => {
