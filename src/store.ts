@@ -3,12 +3,12 @@ import { createStore } from '@syrflover/simple-store';
 import env from './env';
 
 export interface IHistory {
-	assetID: string;
-	date: number;
+    assetID: string;
+    date: number;
 }
 
 export interface IData {
-	history: IHistory[];
+    history: IHistory[];
 }
 
 const dbPath = `${env.ASSET_FOLDER}/db.json`;

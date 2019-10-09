@@ -1,21 +1,21 @@
 {
-  "defaultSeverity": "error",
-  "extends": ["tslint:recommended"],
-  "jsRules": {},
-  "rules": {
-    "max-line-length": false,
-    "object-literal-sort-keys": false,
-    "ordered-imports": false,
-    "member-ordering": false,
-    "quotemark": false,
-    "semicolon": true,
-    "no-console": false,
-    "unified-signatures": false,
-    "interface-name": false,
-    "max-classes-per-file": false,
-    "variable-name": false,
-    "indent": [true, "tabs", 4],
-    "ter-indent": false
-  },
-  "rulesDirectory": []
+    "defaultSeverity": "error",
+    "extends": ["tslint:recommended"],
+    "jsRules": {},
+    "rules": {
+        "max-line-length": false,
+        "object-literal-sort-keys": false,
+        "ordered-imports": false,
+        "member-ordering": false,
+        "quotemark": false,
+        "semicolon": true,
+        "no-console": true,
+        "unified-signatures": false,
+        "interface-name": false,
+        "max-classes-per-file": false,
+        "variable-name": false,
+        "indent": [true, "spaces", 4],
+        "ter-indent": false
+    },
+    "rulesDirectory": []
 }
