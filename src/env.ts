@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { logger } from './logger';
 
 export interface IEnv extends NodeJS.ProcessEnv {
     USER_TOKEN: string;
@@ -6,7 +7,8 @@ export interface IEnv extends NodeJS.ProcessEnv {
     ASSET_FOLDER: string;
 }
 
-export default (() => {
+const getEnv = () => {
+    // logger.trace('getEnv()');
     // const isDev = process.env.NODE_ENV === 'development';
 
     dotenv.config();
@@ -18,4 +20,6 @@ export default (() => {
     } as IEnv;
     // }
     // return process.env as IEnv;
-})();
+};
+
+export default getEnv();

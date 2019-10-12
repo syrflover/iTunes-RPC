@@ -43,8 +43,6 @@ const setRPC = async (drpc: RPC.Client | null) => {
 
     const playInfo = await getCurrentPlayingInfo();
 
-    logger.debug('playInfo =', playInfo);
-
     const { title, album, artist, time } = playInfo;
 
     const { duration, position } = time;
@@ -53,23 +51,21 @@ const setRPC = async (drpc: RPC.Client | null) => {
     const isChange = await F.some((e) => !current.includes(e), prev);
 
     if (isChange) {
-        logger.log('');
+        // logger.log('');
 
         prev.clear().push(artist, album, title);
 
         const songKey = urlSlug(`${artist} ${album} ${title}`);
 
         const assets = await getRichPresenceAssets();
-        logger.info('Get Rich Presence Assets');
 
         const {
             exists: hasCoverInITunes,
             path: imagePath,
         } = await saveArtWorkOfCurrentTrack(songKey);
-        logger.info(`Save Album Art <- ${songKey}`);
 
         // prettier-ignore
-        logger.info(`${hasCoverInITunes ? 'Has' : `Hasn't`} Album Art in iTunes <- ${songKey}`);
+        logger.trace(`${hasCoverInITunes ? 'Has' : `Hasn't`} Album Art in iTunes`, songKey);
 
         if (!hasCoverInITunes) {
             assetKey = 'has_not_album_art';
@@ -77,12 +73,11 @@ const setRPC = async (drpc: RPC.Client | null) => {
         }
 
         const cover = imageToBase64(await readFile(imagePath, 'base64'));
-        logger.info(`Album Art Encode to base64 <- ${songKey}`);
 
         const id = uuid(cover, UUID_NAMESPACE).replace(/\-/g, '');
 
+        logger.trace('Read History Data');
         const { history: historyDB } = await store.read();
-        logger.info('Read History Data');
 
         if (checkAssetsLimit(assets, 150)) {
             const removeTarget = random(assets);
@@ -94,15 +89,13 @@ const setRPC = async (drpc: RPC.Client | null) => {
                     F.collect,
                 );
 
+                logger.trace('Remove History', id);
                 await store.write({
                     history: removed,
                 });
-                logger.info(`Remove History <- ${id}`);
 
                 await deleteRichPresenceAsset(assets, [removeTarget.name]);
-                logger.info(
-                    `Delete Rich Presence Asset <- ${removeTarget.name}`,
-                );
+                // logger.trace('Delete Rich Presence Asset', removeTarget.name);
 
                 const updateAssets = await F.run(
                     assets,
@@ -121,17 +114,21 @@ const setRPC = async (drpc: RPC.Client | null) => {
         // rename or remove image file
 
         if (!alreadyCoverInLocal && hasCoverInITunes) {
-            logger.info(`Not Ready Album Art in Local`);
+            logger.trace(`Not Ready Album Art in Local`);
             fs.promises
                 .rename(imagePath, `${env.ASSET_FOLDER}/${id}.jpg`)
                 .then(() =>
-                    logger.info(`Rename <- ${songKey}.jpg to ${id}.jpg`),
+                    logger.debug(
+                        `\nRename`,
+                        imagePath,
+                        `${env.ASSET_FOLDER}/${id}.jpg`,
+                    ),
                 );
         } else if (alreadyCoverInLocal) {
-            logger.info('Already Album Art in Local');
+            logger.trace('Already Album Art in Local');
             fs.promises
                 .unlink(imagePath)
-                .then(() => logger.info(`Remove <- ${songKey}.jpg`));
+                .then(() => logger.debug(`\nRemove`, imagePath));
         }
 
         // upload asset
@@ -144,7 +141,7 @@ const setRPC = async (drpc: RPC.Client | null) => {
                 image: cover,
                 type: 1,
             });
-            logger.info(`Upload Rich Presence Asset <- ${id}`);
+            // logger.info(`Upload Rich Presence Asset <- ${id}`);
         }
 
         // update history
@@ -154,10 +151,10 @@ const setRPC = async (drpc: RPC.Client | null) => {
             ...historyDB,
         ]);
 
+        logger.trace('Update Song History', id);
         await store.write({
             history: updatedHistory,
         });
-        logger.info(`Update Song and History <- ${id}`);
 
         assetKey = id;
     } else {
@@ -203,7 +200,7 @@ rpc.login({
 });
 
 rpc.once('ready', async () => {
-    logger.log('\nready', 'pid =', process.pid);
+    logger.info('\nready', 'pid =', process.pid);
 });
 
 setInterval(() => {
@@ -213,7 +210,7 @@ setInterval(() => {
     rpc = new RPC.Client({ transport: 'ipc' });
 
     rpc.once('ready', async () => {
-        logger.log('\nready', 'pid =', process.pid);
+        logger.info('\nready', 'pid =', process.pid);
     });
 
     rpc.login({

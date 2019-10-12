@@ -2,6 +2,7 @@ import * as os from 'os';
 import { pathExists } from '@syrflover/simple-store';
 import env from '../env';
 import { spawnp } from './spawnp';
+import { logger } from '../logger';
 
 interface IPlayTime {
     position: number;
@@ -36,13 +37,16 @@ const iTunes =
     parseInt(os.release().split('.')[0], 10) >= 19 ? 'Music' : 'iTunes';
 
 export const isStopped = (): Promise<boolean> => {
+    logger.trace('isStopped()');
     return new Promise(async (resolve, reject) => {
         await spawnp('osascript', [
             '-e',
             `tell application "${iTunes}" to {player state}`,
         ])
             .then((stdout) => {
-                resolve(stdout.trim() === 'stopped');
+                const r = stdout.trim() === 'stopped';
+                logger.debug('\nisStoppped() =', r);
+                resolve(r);
             })
             .catch(reject);
     });
@@ -51,6 +55,7 @@ export const isStopped = (): Promise<boolean> => {
 export const saveArtWorkOfCurrentTrack = (
     fileName: string,
 ): Promise<{ exists: boolean; path: string }> => {
+    logger.trace('saveArtWorkOfCurrentTrack()');
     return new Promise(async (resolve, reject) => {
         const filePath = `${env.ASSET_FOLDER}/${fileName}.jpg`;
 
@@ -132,11 +137,14 @@ end try`; */
         await spawnp('osascript', scripts)
             .then(async () => {
                 const exists = await pathExists(filePath);
-
-                resolve({
+                const r = {
                     exists,
                     path: filePath,
-                });
+                };
+
+                logger.debug('\nsaveArtWorkOfCurrentTrack() =', r);
+
+                resolve(r);
             })
             .catch((error) => {
                 reject(error);
@@ -145,6 +153,7 @@ end try`; */
 };
 
 export const getCurrentPlayingInfo = (): Promise<IPlayInfo> => {
+    logger.trace('getCurrentPlayingInfo()');
     return new Promise(async (resolve, reject) => {
         // osascript -e 'tell application "iTunes" to {position: player position} & {start: start, duration: duration, finish: finish, name: name, artist: artist, album: album} of current track & {state: player state}'
 
@@ -163,6 +172,9 @@ export const getCurrentPlayingInfo = (): Promise<IPlayInfo> => {
           'MASHUPTHEDANCE',
           'playing\n' ]
         */
+
+                logger.debug('\ngetCurrentPlayingInfo().raw =', stdout);
+
                 const [
                     ,
                     position,
@@ -193,6 +205,8 @@ export const getCurrentPlayingInfo = (): Promise<IPlayInfo> => {
                         finish: parseFloat(finish),
                     },
                 };
+
+                logger.debug('\ngetCurrentPlayingInfo() =', playInfo);
 
                 resolve(playInfo);
             })
